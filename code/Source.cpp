@@ -15,7 +15,7 @@ T scalar_product(int n, T* first, T* second) {
 	return result;
 }
 template <typename U>
-double sp_get_time(int n,int count) {
+double sp_get_time(int n, int count) {
 	U* first = new U[n];
 	U* second = new U[n];
 	for (int i = 0; i < n; i++) {
@@ -53,7 +53,7 @@ T* mxv(int n, T** matrix, T* vector, T* result) {
 }
 
 template <typename U>
-double mxv_get_time(int n,int count) {
+double mxv_get_time(int n, int count) {
 	U** matrix = new U * [n];
 	for (int i = 0; i < n; i++) {
 		matrix[i] = new U[n];
@@ -106,7 +106,7 @@ T** mxm(int n, T** m1, T** m2, T** result) {
 }
 
 template <typename U>
-double mxm_get_time(int n,int count) {
+double mxm_get_time(int n, int count) {
 	U** m1 = new U * [n];
 	U** m2 = new U * [n];
 	U** result = new U * [n];
@@ -140,4 +140,32 @@ double mxm_get_time(int n,int count) {
 	delete[] result;
 	return t2;
 
+}
+
+int main() {
+	int method, dim, number;
+	std::cout << "Enter method(sp-1,mxv-2,mxm-3),dim,number" << std::endl;
+	std::cin >> method;
+	std::cin >> dim;
+	std::cin >> number;
+	if (dim <= 0) {
+		std::cout << "incorrect dim" << std::endl;
+		return 0;
+	}
+	if (number <= 0) {
+		std::cout << "incorrect number" << std::endl;
+		return 0;
+	}
+	if (method == 1) {
+	sp_get_time<double>(dim, number);
+	}
+	else if (method == 2) {
+		mxv_get_time<double>(dim, number);
+	}
+	else if (method == 3) {
+		mxm_get_time<double>(dim, number);
+	}
+	else {
+		std::cout << "incorrect method" << std::endl;
+	}
 }
