@@ -1,5 +1,6 @@
 import subprocess
 import csv
+import os
 
 def run_sp(n):
     try:
@@ -37,10 +38,18 @@ def run_mxm(n):
 
 if __name__ == "__main__":
     try:
-        print("Введите метод(sp-1,mxv-2,mxm-3),размерность матрицы,количество запусков")
-        method=int(input())
-        n = int(input())  # Размер матрицы
-        num_runs = int(input())
+        print("Введите метод (sp-1, mxv-2, mxm-3), размерность матрицы, количество запусков (через пробел):")
+        # Ввод всех значений в одну строку
+        input_data = input().strip().split()
+        
+        # Проверка, что введено ровно три значения
+        if len(input_data) != 3:
+            raise ValueError("Необходимо ввести ровно три числа.")
+        
+        # Преобразование введенных данных в целые числа
+        method = int(input_data[0])
+        n = int(input_data[1])  # Размер матрицы
+        num_runs = int(input_data[2])  # Количество запусков
        
     except (ValueError, IndexError):
         print("Ошибка: Необходимо указать три целых числа (метод, размер матрицы, число запусков).")
@@ -53,28 +62,39 @@ if __name__ == "__main__":
             if success is None:
                 break
             time += success
-
-        with open("./results/csv_files/sp_result.csv", 'a', newline='') as csvfile:  
+        file_path = "./results/output_files/sp_result.csv"
+        file_exists = os.path.exists(file_path)
+        with open(file_path, 'a', newline='') as csvfile:  
             writer = csv.writer(csvfile) 
-            writer.writerow([n, time])
+            if not file_exists:
+                writer.writerow(['Размер матрицы','Количество запусков', 'Время выполнения'])
+            writer.writerow([n, num_runs,time])
     elif method==2:
         for i in range(num_runs):
             success = run_mxv(n)
             if success is None:
                 break
             time += success
-
-        with open("./results/csv_files/mxv_result.csv", 'a', newline='') as csvfile:  
+        file_path = "./results/output_files/mxv_result.csv"
+        file_exists = os.path.exists(file_path)
+        with open(file_path, 'a', newline='') as csvfile:  
             writer = csv.writer(csvfile) 
-            writer.writerow([n, time])
+            if not file_exists:
+                writer.writerow(['Размер матрицы','Количество запусков', 'Время выполнения'])
+            writer.writerow([n,num_runs,time])
     else:
         for i in range(num_runs):
             success = run_mxm(n)
             if success is None:
                 break
             time += success
-
-        with open("./results/csv_files/mxm_result.csv", 'a', newline='') as csvfile:  
+        file_path = "./results/output_files/mxm_result.csv"
+        file_exists = os.path.exists(file_path)
+        with open(file_path, 'a', newline='') as csvfile:  
             writer = csv.writer(csvfile) 
-            writer.writerow([n, time])
+            if not file_exists:
+                writer.writerow(['Размер матрицы','Количество запусков', 'Время выполнения'])
+            writer.writerow([n,num_runs,time])
+    
+            
        
