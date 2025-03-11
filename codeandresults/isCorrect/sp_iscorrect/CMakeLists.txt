@@ -8,4 +8,4 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Добавление исполняемого файла
-add_executable(SPFunctionTest main.cpp)
+add_executable(SPFunctionTest sp_correct.cpp)

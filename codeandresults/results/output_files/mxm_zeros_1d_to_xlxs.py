@@ -25,8 +25,8 @@ def csv_to_xls(csv_file, xls_file):
 
 if __name__ == "__main__":
     # Укажите пути к CSV и XLS файлам
-    csv_file = "./mxm_result.csv"  # Замените на путь к вашему CSV-файлу
-    xls_file = "./mxm_result.xlsx"  # Используйте .xlsx вместо .xls
+    csv_file = "./mxm_1d_result_zeros.csv"  # Замените на путь к вашему CSV-файлу
+    xls_file = "./mxm_1d_result_zeros.xlsx"  # Используйте .xlsx вместо .xls
 
     # Вызов функции для преобразования
     csv_to_xls(csv_file, xls_file)

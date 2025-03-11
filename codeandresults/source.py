@@ -1,10 +1,11 @@
 import subprocess
-import csv
+import sys
 import os
+import csv
 
-def run_sp(n):
+def run_sp(n, data_method):
     try:
-        result = subprocess.run(["./sp/sp.exe", str(n)], capture_output=True, text=True, check=True)
+        result = subprocess.run(["./sp/sp.exe", str(n), str(data_method)], capture_output=True, text=True, check=True)
         return float(result.stdout.strip())
     except subprocess.CalledProcessError as e:
         print(f"Ошибка: {e}")
@@ -12,22 +13,13 @@ def run_sp(n):
     except ValueError:
         print("Ошибка преобразования результата в число.")
         return None
-        
-def run_mxv(n):
-    try:
-        result = subprocess.run(["./mxv/mxv.exe", str(n)], capture_output=True, text=True, check=True)
-        return float(result.stdout.strip())
-    except subprocess.CalledProcessError as e:
-        print(f"Ошибка: {e}")
-        return None
-    except ValueError:
-        print("Ошибка преобразования результата в число.")
-        return None
-        
 
-def run_mxm(n):
+def run_mxv(n, data_method,matrix_storage):
     try:
-        result = subprocess.run(["./mxm/mxm.exe", str(n)], capture_output=True, text=True, check=True)
+        if matrix_storage == 0:
+            result = subprocess.run(["./mxv/1d_array/mxv_1d.exe", str(n), str(data_method)], capture_output=True, text=True, check=True)
+        else:
+            result = subprocess.run(["./mxv/2d_array/mxv_2d.exe", str(n), str(data_method)], capture_output=True, text=True, check=True)
         return float(result.stdout.strip())
     except subprocess.CalledProcessError as e:
         print(f"Ошибка: {e}")
@@ -35,66 +27,114 @@ def run_mxm(n):
     except ValueError:
         print("Ошибка преобразования результата в число.")
         return None
+
+def run_mxm(n, data_method,matrix_storage):
+    try:
+        if matrix_storage == 0:
+            result = subprocess.run(["./mxm/1d_array/mxm_1d.exe", str(n), str(data_method)], capture_output=True, text=True, check=True)
+        else:
+            result = subprocess.run(["./mxm/2d_array/mxm_2d.exe", str(n), str(data_method)], capture_output=True, text=True, check=True)
+        return float(result.stdout.strip())
+    except subprocess.CalledProcessError as e:
+        print(f"Ошибка: {e}")
+        return None
+    except ValueError:
+        print("Ошибка преобразования результата в число.")
+        return None
+
+def validate_input(method, data_method,matrix_storage):
+    """Проверка, что method и data_method находятся в допустимых пределах."""
+    if method not in {1, 2, 3}:
+        raise ValueError("Недопустимое значение method. Допустимые значения: 1, 2, 3.")
+    if data_method not in {1, 2, 3}:
+        raise ValueError("Недопустимое значение data_method. Допустимые значения: 1, 2, 3.")
+    if matrix_storage not in {0,1}:
+        raise ValueError("Недопустимое значение matrix_storage. Допустимые значения: 0,1.")
 
 if __name__ == "__main__":
     try:
-        print("Введите метод (sp-1, mxv-2, mxm-3), размерность матрицы, количество запусков (через пробел):")
-        # Ввод всех значений в одну строку
-        input_data = input().strip().split()
-        
-        # Проверка, что введено ровно три значения
-        if len(input_data) != 3:
-            raise ValueError("Необходимо ввести ровно три числа.")
-        
-        # Преобразование введенных данных в целые числа
-        method = int(input_data[0])
-        n = int(input_data[1])  # Размер матрицы
-        num_runs = int(input_data[2])  # Количество запусков
-       
-    except (ValueError, IndexError):
-        print("Ошибка: Необходимо указать три целых числа (метод, размер матрицы, число запусков).")
+        args = sys.argv
+        script_name = args[0]
+        method = int(args[1])  # Метод
+        n = int(args[2])  # Размер матрицы
+        num_runs = int(args[3])  # Количество запусков
+        data_method = int(args[4])# Метод генерации данных
+        matrix_storage=int(args[5])
+
+        # Проверка допустимости значений method и data_method
+        validate_input(method, data_method,matrix_storage)
+
+    except (ValueError, IndexError) as e:
+        print(f"Ошибка при считывании аргументов командной строки: {e}")
         exit(1)
 
     time = 0
-    if method==1:
-        for i in range(num_runs):
-            success = run_sp(n)
-            if success is None:
-                break
-            time += success
-        file_path = "./results/output_files/sp_result.csv"
+    try:
+        if method == 1:
+            for i in range(num_runs):
+                success = run_sp(n, data_method)
+                if success is None:
+                    break
+                time += success
+            if data_method == 1:
+                file_path = "./results/output_files/sp_result_zeros.csv"
+            elif data_method == 2:
+                file_path = "./results/output_files/sp_result_random.csv"
+            elif data_method == 3:
+                file_path = "./results/output_files/sp_result_twos.csv"
+
+        elif method == 2:
+            for i in range(num_runs):
+                success = run_mxv(n, data_method,matrix_storage)
+                if success is None:
+                    break
+                time += success
+            if data_method == 1:
+                if matrix_storage==0:
+                    file_path = "./results/output_files/mxv_1d_result_zeros.csv"
+                else:
+                    file_path = "./results/output_files/mxv_2d_result_zeros.csv"
+            elif data_method == 2:
+                if matrix_storage ==0:
+                    file_path = "./results/output_files/mxv_1d_result_random.csv"
+                else:
+                    file_path = "./results/output_files/mxv_2d_result_random.csv"
+            elif data_method == 3:
+                if matrix_storage==0:
+                    file_path = "./results/output_files/mxv_1d_result_twos.csv"
+                else:
+                    file_path = "./results/output_files/mxv_2d_result_twos.csv"
+
+        elif method == 3:
+            for i in range(num_runs):
+                success = run_mxm(n, data_method)
+                if success is None:
+                    break
+                time += success
+            if data_method == 1:
+                if matrix_storage==0:
+                    file_path = "./results/output_files/mxm_1d_result_zeros.csv"
+                else:
+                    file_path = "./results/output_files/mxm_2d_result_zeros.csv"
+            elif data_method == 2:
+                if matrix_storage==0:
+                    file_path = "./results/output_files/mxm_1d_result_random.csv"
+                else:
+                    file_path = "./results/output_files/mxm_2d_result_random.csv"
+            elif data_method == 3:
+                if matrix_storage==0:
+                    file_path = "./results/output_files/mxm_1d_result_twos.csv"
+                else:
+                    file_path = "./results/output_files/mxm_2d_result_twos.csv"
+
+        # Запись результатов в файл
         file_exists = os.path.exists(file_path)
-        with open(file_path, 'a', newline='') as csvfile:  
-            writer = csv.writer(csvfile) 
+        with open(file_path, 'a', newline='') as csvfile:
+            writer = csv.writer(csvfile)
             if not file_exists:
-                writer.writerow(['Размер матрицы','Количество запусков', 'Время выполнения'])
-            writer.writerow([n, num_runs,time])
-    elif method==2:
-        for i in range(num_runs):
-            success = run_mxv(n)
-            if success is None:
-                break
-            time += success
-        file_path = "./results/output_files/mxv_result.csv"
-        file_exists = os.path.exists(file_path)
-        with open(file_path, 'a', newline='') as csvfile:  
-            writer = csv.writer(csvfile) 
-            if not file_exists:
-                writer.writerow(['Размер матрицы','Количество запусков', 'Время выполнения'])
-            writer.writerow([n,num_runs,time])
-    else:
-        for i in range(num_runs):
-            success = run_mxm(n)
-            if success is None:
-                break
-            time += success
-        file_path = "./results/output_files/mxm_result.csv"
-        file_exists = os.path.exists(file_path)
-        with open(file_path, 'a', newline='') as csvfile:  
-            writer = csv.writer(csvfile) 
-            if not file_exists:
-                writer.writerow(['Размер матрицы','Количество запусков', 'Время выполнения'])
-            writer.writerow([n,num_runs,time])
-    
-            
-       
+                writer.writerow(['Размер матрицы', 'Количество запусков', 'Время выполнения'])
+            writer.writerow([n, num_runs, time])
+
+    except Exception as e:
+        print(f"Ошибка во время выполнения программы: {e}")
+        exit(1)

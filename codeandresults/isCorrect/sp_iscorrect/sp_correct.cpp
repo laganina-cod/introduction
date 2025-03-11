@@ -8,7 +8,7 @@ bool almostEqual(double a, double b, double epsilon = 1e-6) {
 
 extern "C" {
     double sp(int n, double* first, double* second) {
-        if (n < 1 || first == nullptr || second == nullptr) ;
+        if (n < 1 || first == nullptr || second == nullptr) return -1;
         double result = 0;
         for (int i = 0; i < n; i++) {
             result = result + first[i] * second[i];
@@ -16,13 +16,6 @@ extern "C" {
         return result;
     }
 }
-
-struct TestCase {
-    int n; // Размерность векторов
-    double* a; // Первый вектор
-    double* b; // Второй вектор
-    double expected; // Ожидаемый результат
-};
 
 int main() {
     // Инициализация тестовых данных
@@ -65,6 +58,22 @@ int main() {
     double a10[] = { 1.5, 2.3, 3.7 };
     double b10[] = { 1.0, 1.0, 1.0 };
     double c10 =7.5;
+    
+    int n_1 = 100;
+    double* a11 = new double[n_1];
+    double* b11 = new double[n_1];
+    for (int i = 0; i < n_1; i++) {
+        a11[i] = b11[i] = 2.0;
+
+    }
+    double c11 = 4.0 * n_1;
+
+    struct TestCase {
+        int n; // Размерность векторов
+        double* a; // Первый вектор
+        double* b; // Второй вектор
+        double expected; // Ожидаемый результат
+    };
 
     // Массив тестовых случаев
     TestCase testCases[] = {
@@ -77,7 +86,8 @@ int main() {
         {3, a7, b7, c7},
         {1, a8, b8, c8},
         {2, a9, b9, c9},
-        {3, a10, b10, c10}
+        {3, a10, b10, c10},
+        {n_1,a11,b11,c11}
     };
 
     // Проверка всех тестовых случаев
@@ -91,6 +101,7 @@ int main() {
             std::cout << "Test case " << i + 1 << " passed!" << std::endl;
         }
     }
-
+    delete[] a11;
+    delete[] b11;
     return 0;
 }

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <random>
 #include <fstream>
 #include <vector>
 #include <string>
@@ -19,27 +20,49 @@ extern "C" {
 }
 
 int main(int argc, char* argv[]) {
-	if (argc != 2) {
-		std::cerr << "The number of arguments is incorrect. One argument is required: the size of the matrix (n)." << std::endl;
+	if (argc != 3) {
+		std::cerr << "The number of arguments is incorrect. Two arguments is required: the size of the matrix (n) and data filing type." << std::endl;
 		return 1;
 	}
 
 	int n = std::stoi(argv[1]);
+	int data_method = std::stoi(argv[2]);
 	double** matrix=new double* [n];
 	for (int i = 0; i < n; i++) {
 		matrix[i] = new double[n];
-		for (int j = 0; j < n; j++) {
-			matrix[i][j] = 0;
-		}
 	}
 	double* vector = new double[n];
 	double* result = new double[n];
-	for (int k = 0; k < n; k++) {
-		vector[k] = 0;
-		result[k] = 0;
-	}
-	
+	if (data_method == 1) {
+		for (int k = 0; k < n; k++) {
+			vector[k] = 0.0;
+			for (int j = 0; j < n; j++) {
+				matrix[k][j] = 0;
+			}
 
+		}
+	}
+	else if (data_method == 2) {
+
+		std::random_device rd;  // Источник случайных чисел
+		std::mt19937 gen(rd()); // Генератор случайных чисел (Mersenne Twister)
+		std::uniform_real_distribution<> dis(0.0, 1.0); // Равномерное распределение от 0 до 1
+		for (int k = 0; k < n; k++) {
+			vector[k] = dis(gen);
+			for (int j = 0; j < n; j++) {
+				matrix[k][j] = dis(gen);
+			}
+
+		}
+	}
+	else {
+		for (int k = 0; k < n; k++) {
+			vector[k] = 2.0;
+			for (int j = 0; j < n; j++) {
+				matrix[k][j] = 2.0;
+			}
+		}
+	}
 	double t1 = omp_get_wtime();
 
 	result = mxv(n, matrix, vector, result);

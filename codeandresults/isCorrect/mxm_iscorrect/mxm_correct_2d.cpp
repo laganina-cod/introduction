@@ -14,7 +14,6 @@ bool almostEqual(int n, double** a, double** b, double epsilon = 1e-6) {
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
             if (std::fabs(a[i][j] - b[i][j]) >= epsilon) {
-                std::cout << "Различие на позиции " << i << " " << j << ": " << a[i][j] << " != " << b[i][j] << " (epsilon=" << epsilon << ")" << std::endl;
                 return false;
             }
         }
@@ -23,7 +22,7 @@ bool almostEqual(int n, double** a, double** b, double epsilon = 1e-6) {
 }
 
 extern "C" {
-    double** mxm(int n, double** m1, double** m2, double** result) {
+    double** mxm_2d(int n, double** m1, double** m2, double** result) {
         if (n < 1 || m1 == nullptr || m2 == nullptr || result == nullptr) return nullptr;
 
         for (int i = 0; i < n; i++) {
@@ -105,7 +104,35 @@ int main() {
     double* b8_m[] = { b8[0], b8[1], b8[2], b8[3] };
     double* expected8_m[] = { expected8[0], expected8[1], expected8[2], expected8[3] };
 
-  
+    int n_1 = 100;
+    int n_2 = 100;
+
+    double** a9 = new double* [n_1];
+    double** b9 = new double*[n_1];
+    double** expected9 = new double*[n_1];
+    for (int i = 0; i < n_1; i++) {
+        a9[i] = new double[n_1];
+        b9[i] = new double[n_1];
+        expected9[i] = new double[n_1];
+        for (int j = 0; j < n_1; j++) {
+            a9[i][j] = 2.0;
+            b9[i][j] = 2.0;
+            expected9[i][j] = 4.0 * n_1;
+        }
+    }
+    double** a10 = new double* [n_2];
+    double** b10 = new double* [n_2];
+    double** expected10 = new double*[n_2];
+    for (int i = 0; i < n_2; i++) {
+        a10[i] = new double[n_2];
+        b10[i] = new double[n_2];
+        expected10[i] = new double[n_2];
+        for (int j = 0; j < n_2; j++) {
+            a10[i][j] = 2.0;
+            b10[i][j] = 2.0;
+            expected10[i][j] = 4.0 * n_2;
+        }
+    }
     
 
     struct TestCase {
@@ -124,7 +151,9 @@ int main() {
         {3, a5_m, b5_m, nullptr, expected5_m},
         {1, a6_m, b6_m, nullptr, expected6_m},
         {3, a7_m, b7_m, nullptr, expected7_m},
-        {4, a8_m, b8_m, nullptr, expected8_m}
+        {4, a8_m, b8_m, nullptr, expected8_m},
+        {n_1,a9,b9,nullptr,expected9},
+        {n_2,a10,b10,nullptr,expected10}
     };
 
     // Проверка всех тестовых случаев
@@ -133,7 +162,7 @@ int main() {
         for (int k = 0; k < testCases[i].n; k++) {
             testCases[i].result[k] = new double[testCases[i].n];
         }
-        mxm(testCases[i].n, testCases[i].a, testCases[i].b, testCases[i].result);
+        mxm_2d(testCases[i].n, testCases[i].a, testCases[i].b, testCases[i].result);
         if (!almostEqual(testCases[i].n, testCases[i].result, testCases[i].expected)) {
             std::cout << "Test case " << i + 1 << " failed! Expected: " << std::endl;
             for (int j = 0; j < testCases[i].n; j++) {
@@ -154,7 +183,34 @@ int main() {
         else {
             std::cout << "Test case " << i + 1 << " passed!" << std::endl;
         }
+        for (int s = 0; s < testCases[i].n; s++) {
+            delete[] testCases[i].result[s];
+        }
+        delete[] testCases[i].result;
+        testCases[i].result = nullptr;
     }
+
+
+    for (int i = 0; i < n_1; i++) {
+        delete[] a9[i];
+        delete[] b9[i];
+        delete[] expected9[i];
+    }
+    delete[] a9;
+    delete[] b9;
+    delete[] expected9;
+
+    for (int i = 0; i < n_2; i++) {
+        delete[] a10[i];
+        delete[] b10[i];
+        delete[] expected10[i];
+    }
+
+    delete[] a10;
+    delete[] b10;
+    delete[] expected10;
+
+    a10 = b10 = expected10 = a9 = b9 = expected9 = nullptr;
 
     return 0;
 }

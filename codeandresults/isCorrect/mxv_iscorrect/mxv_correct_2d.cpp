@@ -15,15 +15,14 @@ bool almostEqual(int n, const double* a, const double* b, double epsilon = 1e-6)
     for (int i = 0; i < n; ++i) {
         
         if (std::fabs(a[i] - b[i]) >= epsilon) {
-            std::cout << "Различие на позиции " << i << ": " << a[i] << " != " << b[i] << " (epsilon=" << epsilon << ")" << std::endl;
-            return false; 
+           return false; 
         }
     }
 
     return true;
 }
 extern "C" {
-	double* mxv(int n, double** matrix, double* vector, double* result) {
+	double* mxv_2d(int n, double** matrix, double* vector, double* result) {
 		if (n < 1 || matrix == nullptr || vector == nullptr || result == nullptr) return nullptr;
 		for (int i = 0; i < n; ++i) {
 			result[i] = 0;
@@ -68,8 +67,32 @@ int main() {
     double a8[4][4] = { {1.1,2.2,3.3,4.4}, {5.5,6.6	,7.7,8.8} ,{9.9,10.1,11.11,12.12},{13.13,14.14,15.15,16.16} };
     double b8[] = { 1.0,2.0,3.0,4.0 };
     double expected8[] = {33.0,77.0,111.91,151.5};
+    int n_1 = 100;
+    int n_2 = 200;
 
+    double** a9 = new double* [n_1];
+    double* b9 = new double[n_1];
+    double* expected9 = new double[n_1];
+    for (int i = 0; i < n_1; i++) {
+        a9[i] = new double[n_1];
+        for (int j = 0; j < n_1; j++) {
+            a9[i][j] = 2.0;
+        }
+        b9[i] = 2.0;
+        expected9[i] = 4.0 * n_1;
+    }
 
+    double** a10 = new double* [n_2];
+    double* b10 = new double[n_2];
+    double* expected10 = new double[n_2];
+    for (int i = 0; i < n_2; i++) {
+        a10[i] = new double[n_2];
+        for (int j = 0; j < n_2; j++) {
+            a10[i][j] = 2.0;
+        }
+        b10[i] = 2.0;
+        expected10[i] = 4.0 * n_2;
+    }
 
 
     // Указатели на матрицы
@@ -83,16 +106,6 @@ int main() {
     double* matrix8[] = { a8[0], a8[1], a8[2],a8[3]};
 
 
-        // Результаты
-    double result1[3];
-    double result2[2];
-    double result3[3];
-    double result4[3];
-    double result5[3];
-    double result6[1];
-    double result7[2];
-    double result8[4];
-
     struct TestCase {
         int n; // Размерность векторов
         double** matrix; // Первый вектор
@@ -102,21 +115,22 @@ int main() {
     };
     
     TestCase testCases[] = {
-           {3, matrix1, b1,result1, expected1},
-           {2, matrix2, b2,result2, expected2},
-           {3, matrix3, b3,result3, expected3},
-           {3, matrix4, b4,result4, expected4},
-           {3, matrix5, b5,result5, expected5},
-           {1, matrix6, b6,result6, expected6},
-           {2, matrix7, b7,result7, expected7},
-           {4, matrix8, b8,result8, expected8}
-
-           
+           {3, matrix1, b1,nullptr, expected1},
+           {2, matrix2, b2,nullptr, expected2},
+           {3, matrix3, b3,nullptr, expected3},
+           {3, matrix4, b4,nullptr, expected4},
+           {3, matrix5, b5,nullptr, expected5},
+           {1, matrix6, b6,nullptr, expected6},
+           {2, matrix7, b7,nullptr, expected7},
+           {4, matrix8, b8,nullptr, expected8},
+           {n_1,a9,b9,nullptr,expected9},
+           {n_2,a10,b10,nullptr,expected10}
     };
 
     // Проверка всех тестовых случаев
     for (int i = 0; i < sizeof(testCases) / sizeof(testCases[0]); i++) {
-        mxv(testCases[i].n, testCases[i].matrix, testCases[i].vector, testCases[i].result);
+        testCases[i].result = new double[testCases[i].n];
+        mxv_2d(testCases[i].n, testCases[i].matrix, testCases[i].vector, testCases[i].result);
         if (!almostEqual(testCases[i].n, testCases[i].result, testCases[i].expected)) {
             std::cout << "Test case " << i + 1 << " failed! Expected: ";
             for (int j = 0; j < testCases[i].n; j++) {
@@ -131,7 +145,26 @@ int main() {
         else {
             std::cout << "Test case " << i + 1 << " passed!" << std::endl;
         }
+        delete[] testCases[i].result;
+        testCases[i].result = nullptr;
     }
+
+    for (int i = 0; i < n_1; i++) {
+        delete[] a9[i];
+    }
+    delete[] a9;
+    delete[] b9;
+    delete[] expected9;
+
+    for (int i = 0; i < n_2; i++) {
+        delete[] a10[i];
+    }
+    delete[] a10;
+    delete[] b10;
+    delete[] expected10;
+    a9 = a10 =nullptr;
+    b9 = expected9 = b10 = expected10 = nullptr;
+
 
     return 0;
 }
