@@ -1,3 +1,0 @@
-C:/Users/Elena/Documents/GitHub/introduction/codeandresults/isCorrect/sp_iscorrect/build/CMakeFiles/SPFunctionTest.dir
-C:/Users/Elena/Documents/GitHub/introduction/codeandresults/isCorrect/sp_iscorrect/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/Elena/Documents/GitHub/introduction/codeandresults/isCorrect/sp_iscorrect/build/CMakeFiles/ZERO_CHECK.dir
