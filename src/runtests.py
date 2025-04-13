@@ -1,11 +1,11 @@
 import subprocess
 from itertools import product
 
-# Конфигурация методов с индивидуальными параметрами
+
 METHODS = {
     1: {
         'name': 'sp',
-        'valid_data_methods': [1, 2, 3, 4],  # Добавлен data_method=4
+        'valid_data_methods': [1, 2, 3, 4], 
         'valid_storage': [0],
         'sizes': [40000000, 41000000, 42000000, 43000000, 44000000, 45000000, 
                  46000000, 47000000, 48000000, 49000000, 50000000, 51000000,
@@ -14,7 +14,7 @@ METHODS = {
     },
     2: {
         'name': 'mxv',
-        'valid_data_methods': [1, 2, 3, 4],  # Добавлен data_method=4
+        'valid_data_methods': [1, 2, 3, 4],  
         'valid_storage': [0, 1],
         'sizes': [500, 510, 520, 530, 540, 550, 560, 570, 580, 590, 
                  600, 610, 620, 630, 640, 650],
@@ -22,7 +22,7 @@ METHODS = {
     },
     3: {
         'name': 'mxm',
-        'valid_data_methods': [1, 2, 3, 4],  # Добавлен data_method=4
+        'valid_data_methods': [1, 2, 3, 4],
         'valid_storage': [0, 1],
         'sizes': [180, 190, 200, 210, 220, 230, 240, 250, 260, 270,
                  280, 290, 300, 310, 320, 330],
@@ -30,12 +30,12 @@ METHODS = {
     }
 }
 
-# Соответствие data_method их описанию
+
 DATA_METHODS = {
     1: 'zeros',
     2: 'random',
     3: 'twos',
-    4: 'custom_pattern'  # Новый тип данных
+    4: 'custom_pattern' 
 }
 
 def is_valid_combination(method, data_method, storage):
